@@ -1,0 +1,40 @@
+# ConfigMap para a API
+# Armazena configurações NÃO sensíveis
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: catalog-api-config
+  namespace: fiap-cloud-games
+  labels:
+    app.kubernetes.io/name: catalog-api
+    app.kubernetes.io/component: api
+    app.kubernetes.io/part-of: fiap-cloud-games
+data:
+  ASPNETCORE_ENVIRONMENT: "Production"
+  ASPNETCORE_URLS: "http://+:8080"
+  TZ: "America/Sao_Paulo"
+  Logging__LogLevel__Default: "Information"
+  Logging__LogLevel__Microsoft.AspNetCore: "Warning"
+  Logging__LogLevel__Microsoft.EntityFrameworkCore: "Warning"
+  
+  # RabbitMQ - Configurações não sensíveis
+  RabbitMq__Host: "rabbitmq"
+  RabbitMq__Port: "5672"
+
+---
+# PersistentVolumeClaim para o SQL Server
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sqlserver-data
+  namespace: fiap-cloud-games
+  labels:
+    app.kubernetes.io/name: sqlserver
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: fiap-cloud-games
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
