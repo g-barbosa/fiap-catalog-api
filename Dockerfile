@@ -2,26 +2,25 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-COPY src/FiapCloudGames.Catalogs.API/FiapCloudGames.Catalogs.API.sln ./
+COPY src/FiapCloudGames.Catalogs.API/FiapCloudGames.Catalogs.API.sln ./FiapCloudGames.Catalogs.API/
 COPY src/FiapCloudGames.Catalogs.API/FiapCloudGames.Catalogs.API.csproj ./FiapCloudGames.Catalogs.API/
 COPY src/FiapCloudGames.Catalogs.Application/FiapCloudGames.Catalogs.Application.csproj ./FiapCloudGames.Catalogs.Application/
 COPY src/FiapCloudGames.Catalogs.Domain/FiapCloudGames.Catalogs.Domain.csproj ./FiapCloudGames.Catalogs.Domain/
 COPY src/FiapCloudGames.Catalogs.Infrastructure/FiapCloudGames.Catalogs.Infrastructure.csproj ./FiapCloudGames.Catalogs.Infrastructure/
 
-RUN dotnet restore ./FiapCloudGames.Catalogs.API/FiapCloudGames.Catalogs.API.csproj
+RUN dotnet restore ./FiapCloudGames.Catalogs.API/FiapCloudGames.Catalogs.API.sln
 
 COPY src/FiapCloudGames.Catalogs.API/ ./FiapCloudGames.Catalogs.API/
 COPY src/FiapCloudGames.Catalogs.Application/ ./FiapCloudGames.Catalogs.Application/
 COPY src/FiapCloudGames.Catalogs.Domain/ ./FiapCloudGames.Catalogs.Domain/
 COPY src/FiapCloudGames.Catalogs.Infrastructure/ ./FiapCloudGames.Catalogs.Infrastructure/
 
-
 WORKDIR /src/FiapCloudGames.Catalogs.API
-RUN dotnet build FiapCloudGames.Catalogs.API.csproj -c Release --no-restore
+RUN dotnet build FiapCloudGames.Catalogs.API.csproj -c Release
 
 # Stage 2: Publicação
 FROM build AS publish
-RUN dotnet publish FiapCloudGames.Catalogs.API.csproj -c Release --no-build -o /app/publish
+RUN dotnet publish FiapCloudGames.Catalogs.API.csproj -c Release -o /app/publish
 
 # Stage 3: Runtime (Final)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
