@@ -14,7 +14,7 @@ spec:
     - port: 80
       targetPort: 8080
   selector:
-    app: users-api
+    app: catalog-api
 
 ---
 # Service para o SQL Server
