@@ -14,4 +14,10 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FiapCloudGames.Catalogs.Application\FiapCloudGames.Catalogs.Application.csproj" />
+    <ProjectReference Include="..\FiapCloudGames.Catalogs.Domain\FiapCloudGames.Catalogs.Domain.csproj" />
+    <ProjectReference Include="..\FiapCloudGames.Catalogs.Infrastructure\FiapCloudGames.Catalogs.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

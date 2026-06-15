@@ -1,4 +1,8 @@
 
+using FiapCloudGames.Catalogs.Domain.Pedidos.Interfaces.Messaging;
+using FiapCloudGames.Catalogs.Infrastructure.Messaging.Consumers;
+using FiapCloudGames.Catalogs.Infrastructure.Messaging.Publishers;
+
 namespace FiapCloudGames.Catalogs.API
 {
     public class Program
@@ -22,6 +26,9 @@ namespace FiapCloudGames.Catalogs.API
             });
 
             builder.Services.AddHealthChecks();
+
+            builder.Services.AddScoped<IPedidoCriadoPublisher, RabbitMqUsuarioEventPublisher>();
+            builder.Services.AddHostedService<PagamentoProcessadoConsumer>();
 
             var app = builder.Build();
 
