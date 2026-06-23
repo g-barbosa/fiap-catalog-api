@@ -1,11 +1,12 @@
-
-using FiapCloudGames.Catalogs.Application.Pedidos.Interfaces;
-using FiapCloudGames.Catalogs.Application.Pedidos.Services;
-using FiapCloudGames.Catalogs.Domain.Pedidos.Interfaces;
+using FiapCloudGames.Catalogs.Application.Jogos.Interfaces;
+using FiapCloudGames.Catalogs.Application.Jogos.Services;
+using FiapCloudGames.Catalogs.Domain.Jogos.Interfaces;
 using FiapCloudGames.Catalogs.Domain.Pedidos.Interfaces.Messaging;
-using FiapCloudGames.Catalogs.Domain.Pedidos.Services;
+using FiapCloudGames.Catalogs.Infrastructure.Data.Persistence;
+using FiapCloudGames.Catalogs.Infrastructure.Data.Persistence.Repositories;
 using FiapCloudGames.Catalogs.Infrastructure.Messaging.Consumers;
 using FiapCloudGames.Catalogs.Infrastructure.Messaging.Publishers;
+using Microsoft.EntityFrameworkCore;
 
 namespace FiapCloudGames.Catalogs.API
 {
@@ -31,10 +32,15 @@ namespace FiapCloudGames.Catalogs.API
 
             builder.Services.AddHealthChecks();
 
+            builder.Services.AddDbContext<CatalogsDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            // Jogos
+            builder.Services.AddScoped<IJogoRepository, JogoRepository>();
+            builder.Services.AddScoped<IJogoService, JogoService>();
+
             builder.Services.AddScoped<IPedidoCriadoPublisher, RabbitMqUsuarioEventPublisher>();
             builder.Services.AddHostedService<PagamentoProcessadoConsumer>();
-            builder.Services.AddScoped<IPedidoDomainService, PedidoDomainService>();
-            builder.Services.AddScoped<IPedidoService, PedidoService>();
 
             var app = builder.Build();
 
