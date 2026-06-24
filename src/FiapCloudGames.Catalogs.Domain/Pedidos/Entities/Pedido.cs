@@ -1,6 +1,8 @@
-﻿namespace FiapCloudGames.Catalogs.Domain.Pedidos.Entities
+﻿using FiapCloudGames.Catalogs.Domain.Core;
+
+namespace FiapCloudGames.Catalogs.Domain.Pedidos.Entities
 {
-    public class Pedido
+    public class Pedido : EntityBase
     {
         public string NomeUsuario { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
