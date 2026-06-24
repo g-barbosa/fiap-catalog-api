@@ -4,5 +4,6 @@ namespace FiapCloudGames.Catalogs.Application.DTOs.Jogos
     {
         public string Titulo { get; set; } = string.Empty;
         public string Descricao { get; set; } = string.Empty;
+        public decimal Preco { get; set; }
     }
 }

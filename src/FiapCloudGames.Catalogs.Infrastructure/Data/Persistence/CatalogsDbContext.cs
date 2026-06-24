@@ -1,4 +1,5 @@
 ﻿using FiapCloudGames.Catalogs.Domain.Jogos.Entities;
+using FiapCloudGames.Catalogs.Domain.Pedidos.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace FiapCloudGames.Catalogs.Infrastructure.Data.Persistence
@@ -10,6 +11,7 @@ namespace FiapCloudGames.Catalogs.Infrastructure.Data.Persistence
         }
 
         public DbSet<Jogo> Jogos => Set<Jogo>();
+        public DbSet<Pedido> Pedidos => Set<Pedido>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

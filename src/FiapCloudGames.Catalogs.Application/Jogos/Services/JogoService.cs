@@ -28,7 +28,7 @@ namespace FiapCloudGames.Catalogs.Application.Jogos.Services
 
         public async Task<JogoResponse> CriarAsync(JogoRequest request)
         {
-            var jogo = new Jogo(request.Titulo, request.Descricao);
+            var jogo = new Jogo(request.Titulo, request.Descricao, request.Preco);
             await _jogoRepository.AdicionarAsync(jogo);
             return ToResponse(jogo);
         }
@@ -58,7 +58,8 @@ namespace FiapCloudGames.Catalogs.Application.Jogos.Services
             Titulo = jogo.Titulo,
             Descricao = jogo.Descricao,
             DataCriacao = jogo.DataCriacao,
-            DataAtualizacao = jogo.DataAtualizacao
+            DataAtualizacao = jogo.DataAtualizacao,
+            Preco = jogo.Preco
         };
     }
 }

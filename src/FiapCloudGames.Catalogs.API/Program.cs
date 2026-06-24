@@ -1,7 +1,11 @@
 using FiapCloudGames.Catalogs.Application.Jogos.Interfaces;
 using FiapCloudGames.Catalogs.Application.Jogos.Services;
+using FiapCloudGames.Catalogs.Application.Pedidos.Interfaces;
+using FiapCloudGames.Catalogs.Application.Pedidos.Services;
 using FiapCloudGames.Catalogs.Domain.Jogos.Interfaces;
+using FiapCloudGames.Catalogs.Domain.Pedidos.Interfaces;
 using FiapCloudGames.Catalogs.Domain.Pedidos.Interfaces.Messaging;
+using FiapCloudGames.Catalogs.Domain.Pedidos.Services;
 using FiapCloudGames.Catalogs.Infrastructure.Data.Persistence;
 using FiapCloudGames.Catalogs.Infrastructure.Data.Persistence.Repositories;
 using FiapCloudGames.Catalogs.Infrastructure.Messaging.Consumers;
@@ -38,6 +42,10 @@ namespace FiapCloudGames.Catalogs.API
             // Jogos
             builder.Services.AddScoped<IJogoRepository, JogoRepository>();
             builder.Services.AddScoped<IJogoService, JogoService>();
+
+            builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
+            builder.Services.AddScoped<IPedidoDomainService, PedidoDomainService>();
+            builder.Services.AddScoped<IPedidoService, PedidoService>();
 
             builder.Services.AddScoped<IPedidoCriadoPublisher, RabbitMqUsuarioEventPublisher>();
             builder.Services.AddHostedService<PagamentoProcessadoConsumer>();
