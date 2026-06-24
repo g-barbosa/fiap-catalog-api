@@ -1,7 +1,10 @@
+using FiapCloudGames.Catalogs.Application.Bibliotecas.Interfaces;
+using FiapCloudGames.Catalogs.Application.Bibliotecas.Services;
 using FiapCloudGames.Catalogs.Application.Jogos.Interfaces;
 using FiapCloudGames.Catalogs.Application.Jogos.Services;
 using FiapCloudGames.Catalogs.Application.Pedidos.Interfaces;
 using FiapCloudGames.Catalogs.Application.Pedidos.Services;
+using FiapCloudGames.Catalogs.Domain.Bibliotecas.Interfaces;
 using FiapCloudGames.Catalogs.Domain.Jogos.Interfaces;
 using FiapCloudGames.Catalogs.Domain.Pedidos.Interfaces;
 using FiapCloudGames.Catalogs.Domain.Pedidos.Interfaces.Messaging;
@@ -42,6 +45,10 @@ namespace FiapCloudGames.Catalogs.API
             // Jogos
             builder.Services.AddScoped<IJogoRepository, JogoRepository>();
             builder.Services.AddScoped<IJogoService, JogoService>();
+
+            // Bibliotecas
+            builder.Services.AddScoped<IBibliotecaRepository, BibliotecaRepository>();
+            builder.Services.AddScoped<IBibliotecaService, BibliotecaService>();
 
             builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
             builder.Services.AddScoped<IPedidoDomainService, PedidoDomainService>();
