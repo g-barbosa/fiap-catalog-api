@@ -1,4 +1,4 @@
-﻿using FiapCloudGames.Catalogs.Application.Services;
+﻿using FiapCloudGames.Catalogs.Application.Pedidos;
 using FiapCloudGames.Catalogs.Domain.Pedidos.Events;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

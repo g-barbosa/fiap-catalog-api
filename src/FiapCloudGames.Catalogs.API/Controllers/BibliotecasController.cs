@@ -52,9 +52,11 @@ namespace FiapCloudGames.Catalogs.API.Controllers
         }
 
         [HttpPost("{id:guid}/jogos")]
-        public async Task<IActionResult> AdicionarJogo(Guid id, [FromBody] AdicionarJogoRequest request)
+        public async Task<IActionResult> SolicitarAdicaoJogo(Guid id, [FromBody] AdicionarJogoRequest request)
         {
-            var biblioteca = await _bibliotecaService.AdicionarJogoAsync(id, request.JogoId);
+            Console.WriteLine($"Solicitando adição do jogo {request.JogoId} à biblioteca {id} para o usuário {request.NomeUsuario} ({request.Email})");
+            var biblioteca = await _bibliotecaService.SolicitarAdicaoJogoAsync(id, request.JogoId, request.NomeUsuario, request.Email);
+            Console.WriteLine($"Resultado da solicitação: {biblioteca}");
 
             if (biblioteca is null)
                 return NotFound();

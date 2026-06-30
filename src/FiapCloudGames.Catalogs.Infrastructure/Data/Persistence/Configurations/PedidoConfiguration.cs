@@ -15,6 +15,7 @@ namespace FiapCloudGames.Catalogs.Infrastructure.Data.Persistence.Configurations
             builder.Property(j => j.Email).IsRequired().HasMaxLength(300);
             builder.Property(j => j.DataAtualizacao).IsRequired().HasDefaultValueSql("GETUTCDATE()");
             builder.Property(j => j.DataCriacao).IsRequired().HasDefaultValueSql("GETUTCDATE()");
+            builder.Property(j => j.IdBiblioteca).IsRequired();
         }
     }
 }

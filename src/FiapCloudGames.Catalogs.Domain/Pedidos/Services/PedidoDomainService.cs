@@ -10,13 +10,14 @@ namespace FiapCloudGames.Catalogs.Domain.Pedidos.Services
         {
             _pedidoRepository = pedidoRepository;
         }
-        public async Task<Pedido> CriarAsync(string nome, string email, Guid IdJogo)
+        public async Task<Pedido> CriarAsync(string nome, string email, Guid idBiblioteca, Guid idJogo)
         {
             var pedido = new Pedido
             {
                 NomeUsuario = nome,
                 Email = email,
-                IdJogo = IdJogo
+                IdBiblioteca = idBiblioteca,
+                IdJogo = idJogo
             };
             await _pedidoRepository.AdicionarAsync(pedido);
 

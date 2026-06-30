@@ -13,16 +13,20 @@ namespace FiapCloudGames.Catalogs.Application.Pedidos.Services
             _pedidoDomainService = pedidoDomainService;
             _pedidoCriadoPublisher = pedidoCriadoPublisher;
         }
-        public async Task ProcessarPedido()
+        public async Task ProcessarPedido(string nomeUsuario, string email, Guid idBiblioteca, Guid idJogo)
         {
-            var pedido = await _pedidoDomainService.CriarAsync("", "", Guid.NewGuid());
+            var pedido = await _pedidoDomainService.CriarAsync(nomeUsuario, email, idBiblioteca, idJogo);
+
+            Console.WriteLine($"Pedido criado com sucesso! PedidoId: {pedido.Id}, NomeUsuario: {nomeUsuario}, Email: {email}, IdJogo: {idJogo}, IdBiblioteca: {idBiblioteca}");
             await _pedidoCriadoPublisher.PublicarPedidoCriadoAsync(new Domain.Pedidos.Events.PedidoCriadoEvent
             {
                 PedidoId = pedido.Id,
-                NomeUsuario = "",
-                Email = "",
-                IdJogo = Guid.NewGuid()
+                NomeUsuario = nomeUsuario,
+                Email = email,
+                IdJogo = idJogo,
+                IdBiblioteca = idBiblioteca
             });
+            Console.WriteLine($"Evento de pedido criado publicado com sucesso! PedidoId: {pedido.Id}, NomeUsuario: {nomeUsuario}, Email: {email}, IdJogo: {idJogo}, IdBiblioteca: {idBiblioteca}");
         }
     }
 }

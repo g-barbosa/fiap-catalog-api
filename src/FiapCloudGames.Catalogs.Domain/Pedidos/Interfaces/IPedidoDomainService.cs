@@ -4,6 +4,6 @@ namespace FiapCloudGames.Catalogs.Domain.Pedidos.Interfaces
 {
     public interface IPedidoDomainService
     {
-        Task<Pedido> CriarAsync(string nome, string email, Guid IdJogo);
+        Task<Pedido> CriarAsync(string nome, string email, Guid idBiblioteca, Guid idJogo);
     }
 }

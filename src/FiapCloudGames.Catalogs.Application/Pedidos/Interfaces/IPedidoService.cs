@@ -2,6 +2,6 @@
 {
     public interface IPedidoService
     {
-        Task ProcessarPedido();
+        Task ProcessarPedido(string nomeUsuario, string email, Guid idBiblioteca, Guid idJogo);
     }
 }
