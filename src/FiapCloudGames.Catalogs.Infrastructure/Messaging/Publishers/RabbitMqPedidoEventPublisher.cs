@@ -7,11 +7,11 @@ using System.Text.Json;
 
 namespace FiapCloudGames.Catalogs.Infrastructure.Messaging.Publishers
 {
-    public class RabbitMqUsuarioEventPublisher : IPedidoCriadoPublisher
+    public class RabbitMqPedidoEventPublisher : IPedidoCriadoPublisher
     {
         private readonly ConnectionFactory _factory;
 
-        public RabbitMqUsuarioEventPublisher(IConfiguration configuration)
+        public RabbitMqPedidoEventPublisher(IConfiguration configuration)
         {
             _factory = new ConnectionFactory
             {

@@ -33,11 +33,22 @@ namespace FiapCloudGames.Catalogs.Infrastructure.Messaging.Consumers
 
             var channel = await connection.CreateChannelAsync();
 
+            await channel.ExchangeDeclareAsync(
+                exchange: "pagamento-processado",
+                type: ExchangeType.Fanout,
+                durable: true,
+                autoDelete: false);
+
             await channel.QueueDeclareAsync(
-                queue: "pagamento-processado",
+                queue: "pagamento-processado-catalog",
                 durable: true,
                 exclusive: false,
                 autoDelete: false);
+
+            await channel.QueueBindAsync(
+                queue: "pagamento-processado-catalog",
+                exchange: "pagamento-processado",
+                routingKey: "");
 
             var consumer = new AsyncEventingBasicConsumer(channel);
 
@@ -59,7 +70,7 @@ namespace FiapCloudGames.Catalogs.Infrastructure.Messaging.Consumers
                 await handler.ProcessarPagamento(evento);
             };
 
-            await channel.BasicConsumeAsync(queue: "usuario-criado", autoAck: true, consumer: consumer);
+            await channel.BasicConsumeAsync(queue: "pagamento-processado-catalog", autoAck: true, consumer: consumer);
         }
     }
 }

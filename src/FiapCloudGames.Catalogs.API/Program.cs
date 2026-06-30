@@ -2,6 +2,7 @@ using FiapCloudGames.Catalogs.Application.Bibliotecas.Interfaces;
 using FiapCloudGames.Catalogs.Application.Bibliotecas.Services;
 using FiapCloudGames.Catalogs.Application.Jogos.Interfaces;
 using FiapCloudGames.Catalogs.Application.Jogos.Services;
+using FiapCloudGames.Catalogs.Application.Pedidos;
 using FiapCloudGames.Catalogs.Application.Pedidos.Interfaces;
 using FiapCloudGames.Catalogs.Application.Pedidos.Services;
 using FiapCloudGames.Catalogs.Domain.Bibliotecas.Interfaces;
@@ -54,8 +55,9 @@ namespace FiapCloudGames.Catalogs.API
             builder.Services.AddScoped<IPedidoDomainService, PedidoDomainService>();
             builder.Services.AddScoped<IPedidoService, PedidoService>();
 
-            builder.Services.AddScoped<IPedidoCriadoPublisher, RabbitMqUsuarioEventPublisher>();
+            builder.Services.AddScoped<IPedidoCriadoPublisher, RabbitMqPedidoEventPublisher>();
             builder.Services.AddHostedService<PagamentoProcessadoConsumer>();
+            builder.Services.AddScoped<ProcessaPagamentoService>();
 
             var app = builder.Build();
 
