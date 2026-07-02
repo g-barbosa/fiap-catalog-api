@@ -57,9 +57,9 @@ namespace FiapCloudGames.Catalogs.Application.Bibliotecas.Services
             if (jogo is null)
                 return null;
 
-            await _pedidoService.ProcessarPedido(nomeUsuario, email, biblioteca.Id, jogo.Id);
+            await _pedidoService.ProcessarPedido(nomeUsuario, email, biblioteca.Id, jogo.Id, jogo.Preco);
 
-            return $"Pedido de adiÁ„o do jogo '{jogo.Titulo}' ‡ biblioteca do usu·rio '{nomeUsuario}' esta sendo processado.";
+            return $"Pedido de adi√ß√£o do jogo '{jogo.Titulo}' √† biblioteca do usu√°rio '{nomeUsuario}' est√° sendo processado. Valor: R$ {jogo.Preco:N2}";
 
         }
 

@@ -13,20 +13,21 @@ namespace FiapCloudGames.Catalogs.Application.Pedidos.Services
             _pedidoDomainService = pedidoDomainService;
             _pedidoCriadoPublisher = pedidoCriadoPublisher;
         }
-        public async Task ProcessarPedido(string nomeUsuario, string email, Guid idBiblioteca, Guid idJogo)
+        public async Task ProcessarPedido(string nomeUsuario, string email, Guid idBiblioteca, Guid idJogo, decimal preco)
         {
             var pedido = await _pedidoDomainService.CriarAsync(nomeUsuario, email, idBiblioteca, idJogo);
 
-            Console.WriteLine($"Pedido criado com sucesso! PedidoId: {pedido.Id}, NomeUsuario: {nomeUsuario}, Email: {email}, IdJogo: {idJogo}, IdBiblioteca: {idBiblioteca}");
+            Console.WriteLine($"Pedido criado com sucesso! PedidoId: {pedido.Id}, NomeUsuario: {nomeUsuario}, Email: {email}, IdJogo: {idJogo}, IdBiblioteca: {idBiblioteca}, Valor: {preco}");
             await _pedidoCriadoPublisher.PublicarPedidoCriadoAsync(new Domain.Pedidos.Events.PedidoCriadoEvent
             {
                 PedidoId = pedido.Id,
                 NomeUsuario = nomeUsuario,
                 Email = email,
                 IdJogo = idJogo,
-                IdBiblioteca = idBiblioteca
+                IdBiblioteca = idBiblioteca,
+                Valor = preco
             });
-            Console.WriteLine($"Evento de pedido criado publicado com sucesso! PedidoId: {pedido.Id}, NomeUsuario: {nomeUsuario}, Email: {email}, IdJogo: {idJogo}, IdBiblioteca: {idBiblioteca}");
+            Console.WriteLine($"Evento de pedido criado publicado com sucesso! PedidoId: {pedido.Id}, NomeUsuario: {nomeUsuario}, Email: {email}, IdJogo: {idJogo}, IdBiblioteca: {idBiblioteca}, Valor: {preco}");
         }
     }
 }
