@@ -8,28 +8,48 @@ namespace FiapCloudGames.Catalogs.Application.Jogos.Services
     public class JogoService : IJogoService
     {
         private readonly IJogoRepository _jogoRepository;
+        private readonly IJogoCache _jogoCache;
 
-        public JogoService(IJogoRepository jogoRepository)
+        public JogoService(IJogoRepository jogoRepository, IJogoCache jogoCache)
         {
             _jogoRepository = jogoRepository;
+            _jogoCache = jogoCache;
         }
 
         public async Task<IEnumerable<JogoResponse>> ObterTodosAsync()
         {
-            var jogos = await _jogoRepository.ObterTodosAsync();
-            return jogos.Select(ToResponse);
+            var cached = await _jogoCache.ObterTodosAsync();
+            if (cached is not null)
+                return cached;
+
+            var jogos = (await _jogoRepository.ObterTodosAsync())
+                .Select(ToResponse)
+                .ToList();
+
+            await _jogoCache.DefinirTodosAsync(jogos);
+            return jogos;
         }
 
         public async Task<JogoResponse?> ObterPorIdAsync(Guid id)
         {
+            var cached = await _jogoCache.ObterPorIdAsync(id);
+            if (cached is not null)
+                return cached;
+
             var jogo = await _jogoRepository.ObterPorIdAsync(id);
-            return jogo is null ? null : ToResponse(jogo);
+            if (jogo is null)
+                return null;
+
+            var response = ToResponse(jogo);
+            await _jogoCache.DefinirPorIdAsync(response);
+            return response;
         }
 
         public async Task<JogoResponse> CriarAsync(JogoRequest request)
         {
             var jogo = new Jogo(request.Titulo, request.Descricao, request.Preco);
             await _jogoRepository.AdicionarAsync(jogo);
+            await _jogoCache.InvalidarAsync(jogo.Id);
             return ToResponse(jogo);
         }
 
@@ -41,15 +61,21 @@ namespace FiapCloudGames.Catalogs.Application.Jogos.Services
 
             jogo.Titulo = request.Titulo;
             jogo.Descricao = request.Descricao;
+            jogo.Preco = request.Preco;
             jogo.DataAtualizacao = DateTime.UtcNow;
 
             await _jogoRepository.AtualizarAsync(jogo);
+            await _jogoCache.InvalidarAsync(id);
             return ToResponse(jogo);
         }
 
         public async Task<bool> DeletarAsync(Guid id)
         {
-            return await _jogoRepository.RemoverAsync(id);
+            var removido = await _jogoRepository.RemoverAsync(id);
+            if (removido)
+                await _jogoCache.InvalidarAsync(id);
+
+            return removido;
         }
 
         private static JogoResponse ToResponse(Jogo jogo) => new()

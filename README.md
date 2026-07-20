@@ -9,6 +9,8 @@ API de Catálogo do sistema **FIAP Cloud Games**, responsável pelo gerenciament
 - **Gerenciamento de Jogos**: CRUD completo para cadastro e manutenção de jogos no catálogo
 - **Bibliotecas de Usuários**: Gerenciamento das bibliotecas pessoais de jogos dos usuários
 - **Processamento de Pedidos**: Criação de pedidos e integração com sistema de pagamentos via mensageria
+- **Avaliações (MongoDB)**: POST/GET de avaliações por jogo em banco documental
+- **Cache (Redis)**: Cache das listagens e detalhes de jogos
 
 ## 🏗️ Arquitetura
 
@@ -19,14 +21,16 @@ src/
 ├── FiapCloudGames.Catalogs.API/            # Camada de apresentação (Controllers, Configurações)
 ├── FiapCloudGames.Catalogs.Application/    # Camada de aplicação (Serviços, DTOs)
 ├── FiapCloudGames.Catalogs.Domain/         # Camada de domínio (Entidades, Interfaces)
-└── FiapCloudGames.Catalogs.Infrastructure/ # Camada de infraestrutura (Repositórios, Mensageria)
+└── FiapCloudGames.Catalogs.Infrastructure/ # Camada de infraestrutura (SQL, Redis, Mongo, Mensageria)
 ```
 
 ## 🛠️ Tecnologias Utilizadas
 
 - **.NET 8** - Framework de desenvolvimento
 - **Entity Framework Core** - ORM para acesso a dados
-- **SQL Server** - Banco de dados relacional
+- **SQL Server** - Banco de dados relacional (jogos, pedidos, bibliotecas)
+- **MongoDB** - NoSQL para avaliações de jogos
+- **Redis** - Cache distribuído
 - **RabbitMQ** - Mensageria para comunicação assíncrona
 - **Swagger/OpenAPI** - Documentação da API
 - **Docker** - Containerização
@@ -47,6 +51,10 @@ src/
 | Variável | Descrição | Exemplo |
 |----------|-----------|---------|
 | `ConnectionStrings__DefaultConnection` | String de conexão do SQL Server | `Server=sqlserver,1433;Database=FiapCloudGamesDb;User Id=SA;Password=SuaSenha;TrustServerCertificate=True` |
+| `ConnectionStrings__Redis` | Endpoint do Redis | `redis:6379` |
+| `ConnectionStrings__MongoDb` | Connection string do MongoDB | `mongodb://admin:mongo123@mongodb:27017` |
+| `MongoDb__Database` | Nome do database MongoDB | `FiapCloudGamesCatalog` |
+| `Cache__JogosTtlSeconds` | TTL do cache de jogos (segundos) | `300` |
 
 ### RabbitMQ
 
@@ -72,6 +80,8 @@ src/
 - .NET 8 SDK
 - Docker e Docker Compose (opcional)
 - SQL Server
+- Redis
+- MongoDB
 - RabbitMQ
 
 ### Execução Local
@@ -114,10 +124,88 @@ kubectl apply -f k8s/
 
 ## 📚 Documentação da API
 
-Após iniciar a aplicação, acesse a documentação Swagger:
+Com o stack via `fiap-orchestration` (`docker compose up`):
 
-- **Local**: http://localhost:8080/swagger
-- **Health Check**: http://localhost:8080/health
+- **Swagger (CatalogAPI)**: http://localhost:8082/swagger
+- **Health Check**: http://localhost:8082/health
+
+> Se rodar só com `dotnet run` (perfil https), a porta muda (ex.: `7165`). Para validar Redis/Mongo do compose, use sempre a porta **8082**.
+
+## ✅ Como testar Redis e MongoDB (Fase 3)
+
+### 1. Subir o ambiente
+
+```bash
+cd ../fiap-orchestration
+docker compose up -d --build
+```
+
+Aguarde o `catalog-api` ficar healthy e abra http://localhost:8082/swagger.
+
+### 2. Criar um jogo (SQL Server)
+
+No Swagger, execute `POST /api/Jogos`:
+
+```json
+{
+  "titulo": "Meu Jogo",
+  "descricao": "Teste de cache",
+  "preco": 99.90
+}
+```
+
+Guarde o `id` retornado.
+
+### 3. Validar o cache Redis
+
+1. Execute `GET /api/Jogos` **duas vezes** no Swagger (1ª grava no Redis; 2ª deve ler do cache).
+2. No terminal, confira as chaves:
+
+```bash
+# Liste as chaves
+docker exec redis redis-cli KEYS "*"
+
+# Veja o conteúdo (IDistributedCache grava como HASH)
+docker exec redis redis-cli HGETALL "fiap-catalog:jogos:all"
+
+# TTL restante (segundos; ~300 = 5 min)
+docker exec redis redis-cli TTL "fiap-catalog:jogos:all"
+```
+
+**O que esperar**
+- Chave `fiap-catalog:jogos:all` (prefixo `fiap-catalog:` do InstanceName)
+- Campo `data` com o JSON da lista de jogos
+- TTL próximo de `300` e diminuindo
+
+Detalhe por id (após `GET /api/Jogos/{id}`):
+
+```bash
+docker exec redis redis-cli KEYS "fiap-catalog:jogos:*"
+docker exec redis redis-cli HGETALL "fiap-catalog:jogos:{id-do-jogo}"
+```
+
+### 4. Validar avaliações no MongoDB
+
+No Swagger, com o `id` do jogo:
+
+1. `POST /api/Jogos/{id}/avaliacoes`
+
+```json
+{
+  "usuarioId": "00000000-0000-0000-0000-000000000001",
+  "nomeUsuario": "Gabriel",
+  "nota": 5,
+  "comentario": "Excelente!"
+}
+```
+
+2. `GET /api/Jogos/{id}/avaliacoes` — deve listar a avaliação criada.
+
+Opcional (conferir no Mongo):
+
+```bash
+docker exec mongodb mongosh -u admin -p mongo123 --authenticationDatabase admin --eval "db.getSiblingDB('FiapCloudGamesCatalog').avaliacoes.find().pretty()"
+```
 
 ## 📁 Estrutura do Kubernetes
 

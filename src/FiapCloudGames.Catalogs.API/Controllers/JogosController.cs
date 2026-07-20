@@ -1,4 +1,6 @@
-﻿using FiapCloudGames.Catalogs.Application.DTOs.Jogos;
+﻿using FiapCloudGames.Catalogs.Application.Avaliacoes.Interfaces;
+using FiapCloudGames.Catalogs.Application.DTOs.Avaliacoes;
+using FiapCloudGames.Catalogs.Application.DTOs.Jogos;
 using FiapCloudGames.Catalogs.Application.Jogos.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,10 +11,12 @@ namespace FiapCloudGames.Catalogs.API.Controllers
     public class JogosController : ControllerBase
     {
         private readonly IJogoService _jogoService;
+        private readonly IAvaliacaoService _avaliacaoService;
 
-        public JogosController(IJogoService jogoService)
+        public JogosController(IJogoService jogoService, IAvaliacaoService avaliacaoService)
         {
             _jogoService = jogoService;
+            _avaliacaoService = avaliacaoService;
         }
 
         [HttpGet]
@@ -40,7 +44,6 @@ namespace FiapCloudGames.Catalogs.API.Controllers
             return CreatedAtAction(nameof(ObterPorId), new { id = jogo.Id }, jogo);
         }
 
-        /// <summary>Atualiza os dados de um jogo existente.</summary>
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> Atualizar(Guid id, [FromBody] JogoRequest request)
         {
@@ -61,6 +64,28 @@ namespace FiapCloudGames.Catalogs.API.Controllers
                 return NotFound();
 
             return NoContent();
+        }
+
+        [HttpGet("{id:guid}/avaliacoes")]
+        public async Task<IActionResult> ObterAvaliacoes(Guid id)
+        {
+            var avaliacoes = await _avaliacaoService.ObterPorJogoIdAsync(id);
+
+            if (avaliacoes is null)
+                return NotFound();
+
+            return Ok(avaliacoes);
+        }
+
+        [HttpPost("{id:guid}/avaliacoes")]
+        public async Task<IActionResult> CriarAvaliacao(Guid id, [FromBody] AvaliacaoRequest request)
+        {
+            var avaliacao = await _avaliacaoService.CriarAsync(id, request);
+
+            if (avaliacao is null)
+                return NotFound();
+
+            return CreatedAtAction(nameof(ObterAvaliacoes), new { id }, avaliacao);
         }
     }
 }

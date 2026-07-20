@@ -21,6 +21,11 @@ data:
   RabbitMq__Host: "rabbitmq"
   RabbitMq__Port: "5672"
 
+  # Redis / Mongo - Configurações não sensíveis
+  ConnectionStrings__Redis: "redis:6379"
+  MongoDb__Database: "FiapCloudGamesCatalog"
+  Cache__JogosTtlSeconds: "300"
+
 ---
 # PersistentVolumeClaim para o SQL Server
 apiVersion: v1
