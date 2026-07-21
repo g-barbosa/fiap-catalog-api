@@ -32,6 +32,7 @@ src/
 - **MongoDB** - NoSQL para avaliações de jogos
 - **Redis** - Cache distribuído
 - **RabbitMQ** - Mensageria para comunicação assíncrona
+- **Prometheus** - Métricas HTTP (`/metrics`) via prometheus-net
 - **Swagger/OpenAPI** - Documentação da API
 - **Docker** - Containerização
 - **Kubernetes** - Orquestração de containers
