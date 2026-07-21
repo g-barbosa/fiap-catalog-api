@@ -1,3 +1,4 @@
+using FiapCloudGames.Catalogs.API.Middleware;
 using FiapCloudGames.Catalogs.Application.Bibliotecas.Interfaces;
 using FiapCloudGames.Catalogs.Application.Bibliotecas.Services;
 using FiapCloudGames.Catalogs.Application.Jogos.Interfaces;
@@ -15,6 +16,7 @@ using FiapCloudGames.Catalogs.Infrastructure.Data.Persistence.Repositories;
 using FiapCloudGames.Catalogs.Infrastructure.Messaging.Consumers;
 using FiapCloudGames.Catalogs.Infrastructure.Messaging.Publishers;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace FiapCloudGames.Catalogs.API
 {
@@ -23,6 +25,18 @@ namespace FiapCloudGames.Catalogs.API
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(builder.Configuration)
+                .Enrich.FromLogContext()
+                .CreateLogger();
+
+            builder.Host.UseSerilog((context, services, loggerConfiguration) =>
+            {
+                loggerConfiguration
+                    .ReadFrom.Configuration(context.Configuration)
+                    .Enrich.FromLogContext();
+            });
 
             // Add services to the container.
 
@@ -38,7 +52,12 @@ namespace FiapCloudGames.Catalogs.API
                 });
             });
 
-            builder.Services.AddHealthChecks();
+            var rabbitMqHost = builder.Configuration["RabbitMq:Host"] ?? "rabbitmq";
+            var rabbitMqPort = int.Parse(builder.Configuration["RabbitMq:Port"] ?? "5672");
+            var rabbitMqUri = new Uri($"amqp://admin:rabbitmq123@{rabbitMqHost}:{rabbitMqPort}/");
+
+            builder.Services.AddHealthChecks()
+                .AddSqlServer(builder.Configuration.GetConnectionString("DefaultConnection") ?? "", name: "SqlServer");
 
             builder.Services.AddDbContext<CatalogsDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -70,11 +89,12 @@ namespace FiapCloudGames.Catalogs.API
             app.UseSwagger();
             app.UseSwaggerUI();
 
+            app.UseMiddleware<CorrelationIdMiddleware>();
+            app.UseMiddleware<ErrorHandlingMiddleware>();
 
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
