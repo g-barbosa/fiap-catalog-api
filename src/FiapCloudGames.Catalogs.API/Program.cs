@@ -23,6 +23,7 @@ using FiapCloudGames.Catalogs.Infrastructure.Messaging.Publishers;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using MongoDB.Driver;
+using Prometheus;
 
 namespace FiapCloudGames.Catalogs.API
 {
@@ -128,10 +129,12 @@ namespace FiapCloudGames.Catalogs.API
             app.UseMiddleware<CorrelationIdMiddleware>();
             app.UseMiddleware<ErrorHandlingMiddleware>();
 
+            app.UseHttpMetrics();
             app.UseHttpsRedirection();
             app.UseAuthorization();
             app.MapControllers();
             app.MapHealthChecks("/health");
+            app.MapMetrics();
 
             app.Run();
         }
