@@ -8,8 +8,9 @@ Manifestos Kubernetes para deploy da Catalog API no cluster.
 |---------|------|-----------|
 | `configmap.yaml` | ConfigMap | Configurações **NÃO** sensíveis (env, URLs, logs) |
 | `secret.yaml` | Secret | Dados **SENSÍVEIS** (connection strings, JWT keys) |
-| `deployment.yaml` | Deployment | Gerenciamento de Pods da API e SQL Server |
-| `service.yaml` | Service | Exposição dos serviços |
+| `deployment.yaml` | Deployment | 2 réplicas, RollingUpdate `maxUnavailable: 0` |
+| `service.yaml` | Service | ClusterIP (exposição externa só pelo Kong) |
+| `kustomization.yaml` | Kustomize | Tag da imagem e registry privado |
 
 ## 🚀 Deploy
 
@@ -28,8 +29,8 @@ kubectl apply -k k8s/
 # 1. Criar namespace (se não existir)
 kubectl create namespace fiap-cloud-games --dry-run=client -o yaml | kubectl apply -f -
 
-# 2. Aplicar todos os manifestos
-kubectl apply -f .
+# 2. Aplicar a API (depois da infra do fiap-orchestration)
+kubectl apply -k .
 
 # 3. Verificar
 kubectl get all -n fiap-cloud-games
@@ -46,11 +47,14 @@ kubectl get all -n fiap-cloud-games
 
 ```
 k8s/
-├── configmap.yaml      # Configurações não-sensíveis + PVC do SQL Server
-├── secret.yaml         # Secrets (JWT, Connection String, SQL Server Password)
-├── deployment.yaml     # Deployment da API + SQL Server
-└── service.yaml        # Services (API + SQL Server)
+├── configmap.yaml
+├── secret.yaml
+├── deployment.yaml
+├── service.yaml
+└── kustomization.yaml
 ```
+
+O SQL Server é único e fica em `fiap-orchestration/k8s/sqlserver`.
 
 ## Pré-requisitos
 
@@ -62,7 +66,7 @@ k8s/
 
 ```bash
 # Na raiz do projeto
-docker build -t fiap-Catalog-api:latest .
+docker build -t fiap-catalog-api:0.1.0 .
 ```
 
 ## Deploy
@@ -71,13 +75,7 @@ docker build -t fiap-Catalog-api:latest .
 
 ```bash
 # Aplicar na ordem correta
-kubectl apply -f k8s/secret.yaml
-kubectl apply -f k8s/configmap.yaml
-kubectl apply -f k8s/service.yaml
-kubectl apply -f k8s/deployment.yaml
-
-# Ou tudo de uma vez
-kubectl apply -f k8s/
+kubectl apply -k k8s/
 ```
 
 ### Acessar localmente
