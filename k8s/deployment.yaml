@@ -1,6 +1,6 @@
 # Deployment da API
-# Imagem: nome local fiap-catalog-api. No cluster gerenciado, o kustomization
-# reescreve newName para o registry privado (ECR, ACR, GAR ou OCIR).
+# Imagem local fiap-catalog-api. O kustomization reescreve para
+# fcgcontainerregistry.azurecr.io/fiap-catalog-api.
 apiVersion: apps/v1
 kind: Deployment
 metadata:

@@ -7,12 +7,8 @@ resources:
   - service.yaml
   - deployment.yaml
 
-# Registry privado da nuvem. Troque newName antes do deploy no cluster gerenciado.
-# ECR:    123456789012.dkr.ecr.us-east-1.amazonaws.com/fiap-catalog-api
-# ACR:    <nome>.azurecr.io/fiap-catalog-api
-# GAR:    <region>-docker.pkg.dev/<project>/<repo>/fiap-catalog-api
-# OCIR:   <region>.ocir.io/<namespace>/fiap-catalog-api
+# Azure Container Registry. A pipeline sobrescreve a tag com o SHA do commit.
 images:
   - name: fiap-catalog-api
-    newName: fiap-catalog-api
+    newName: fcgcontainerregistry.azurecr.io/fiap-catalog-api
     newTag: "0.1.0"

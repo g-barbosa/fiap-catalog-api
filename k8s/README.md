@@ -144,7 +144,7 @@ Para produção, atualize a imagem no `deployment.yaml`:
 ```yaml
 containers:
   - name: catalog-api
-    image: seu-registry.azurecr.io/fiap-catalog-api:v1.0.0
+    image: fcgcontainerregistry.azurecr.io/fiap-catalog-api:v1.0.0
     imagePullPolicy: Always
 ```
 
