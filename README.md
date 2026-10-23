@@ -52,7 +52,7 @@ src/
 |----------|-----------|---------|
 | `ConnectionStrings__DefaultConnection` | String de conexão do SQL Server | `Server=sqlserver,1433;Database=FiapCloudGamesDb;User Id=SA;Password=SuaSenha;TrustServerCertificate=True` |
 | `ConnectionStrings__Redis` | Endpoint do Redis | `redis:6379` |
-| `ConnectionStrings__MongoDb` | Connection string do MongoDB | `mongodb://admin:mongo123@mongodb:27017` |
+| `ConnectionStrings__MongoDb` | Connection string do MongoDB | `mongodb://admin:<senha>@mongodb:27017` |
 | `MongoDb__Database` | Nome do database MongoDB | `FiapCloudGamesCatalog` |
 | `Cache__JogosTtlSeconds` | TTL do cache de jogos (segundos) | `300` |
 
@@ -204,7 +204,7 @@ No Swagger, com o `id` do jogo:
 Opcional (conferir no Mongo):
 
 ```bash
-docker exec mongodb mongosh -u admin -p mongo123 --authenticationDatabase admin --eval "db.getSiblingDB('FiapCloudGamesCatalog').avaliacoes.find().pretty()"
+docker exec mongodb mongosh -u admin -p <senha do .env> --authenticationDatabase admin --eval "db.getSiblingDB('FiapCloudGamesCatalog').avaliacoes.find().pretty()"
 ```
 
 ## 📁 Estrutura do Kubernetes
