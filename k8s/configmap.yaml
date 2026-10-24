@@ -28,3 +28,7 @@ data:
   ConnectionStrings__Redis: "redis:6379"
   MongoDb__Database: "FiapCloudGamesCatalog"
   Cache__JogosTtlSeconds: "300"
+
+  # Elasticsearch gerenciado. A API key fica no Key Vault, não aqui.
+  Elasticsearch__Url: "https://my-elasticsearch-project-a1b56c.es.brazilsouth.azure.elastic.cloud:443"
+  Elasticsearch__Index: "jogos"
