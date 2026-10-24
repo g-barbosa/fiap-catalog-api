@@ -9,11 +9,13 @@ namespace FiapCloudGames.Catalogs.Application.Jogos.Services
     {
         private readonly IJogoRepository _jogoRepository;
         private readonly IJogoCache _jogoCache;
+        private readonly IJogoSearch _jogoSearch;
 
-        public JogoService(IJogoRepository jogoRepository, IJogoCache jogoCache)
+        public JogoService(IJogoRepository jogoRepository, IJogoCache jogoCache, IJogoSearch jogoSearch)
         {
             _jogoRepository = jogoRepository;
             _jogoCache = jogoCache;
+            _jogoSearch = jogoSearch;
         }
 
         public async Task<IEnumerable<JogoResponse>> ObterTodosAsync()
@@ -50,7 +52,9 @@ namespace FiapCloudGames.Catalogs.Application.Jogos.Services
             var jogo = new Jogo(request.Titulo, request.Descricao, request.Preco);
             await _jogoRepository.AdicionarAsync(jogo);
             await _jogoCache.InvalidarAsync(jogo.Id);
-            return ToResponse(jogo);
+            var response = ToResponse(jogo);
+            await _jogoSearch.IndexarAsync(response);
+            return response;
         }
 
         public async Task<JogoResponse?> AtualizarAsync(Guid id, JogoRequest request)
@@ -66,14 +70,19 @@ namespace FiapCloudGames.Catalogs.Application.Jogos.Services
 
             await _jogoRepository.AtualizarAsync(jogo);
             await _jogoCache.InvalidarAsync(id);
-            return ToResponse(jogo);
+            var response = ToResponse(jogo);
+            await _jogoSearch.IndexarAsync(response);
+            return response;
         }
 
         public async Task<bool> DeletarAsync(Guid id)
         {
             var removido = await _jogoRepository.RemoverAsync(id);
             if (removido)
+            {
                 await _jogoCache.InvalidarAsync(id);
+                await _jogoSearch.RemoverAsync(id);
+            }
 
             return removido;
         }

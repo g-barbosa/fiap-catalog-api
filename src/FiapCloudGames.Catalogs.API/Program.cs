@@ -20,6 +20,7 @@ using FiapCloudGames.Catalogs.Infrastructure.Data.Persistence;
 using FiapCloudGames.Catalogs.Infrastructure.Data.Persistence.Repositories;
 using FiapCloudGames.Catalogs.Infrastructure.Messaging.Consumers;
 using FiapCloudGames.Catalogs.Infrastructure.Messaging.Publishers;
+using FiapCloudGames.Catalogs.Infrastructure.Search;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using MongoDB.Driver;
@@ -99,6 +100,9 @@ namespace FiapCloudGames.Catalogs.API
                 var databaseName = builder.Configuration["MongoDb:Database"] ?? "FiapCloudGamesCatalog";
                 return client.GetDatabase(databaseName);
             });
+
+            builder.Services.AddSingleton<IJogoSearch, ElasticsearchJogoSearch>();
+            builder.Services.AddHostedService<JogoSearchSyncService>();
 
             builder.Services.AddScoped<IJogoRepository, JogoRepository>();
             builder.Services.AddScoped<IJogoCache, RedisJogoCache>();

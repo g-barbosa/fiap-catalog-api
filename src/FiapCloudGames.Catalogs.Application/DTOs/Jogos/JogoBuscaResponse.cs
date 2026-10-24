@@ -1,0 +1,11 @@
+namespace FiapCloudGames.Catalogs.Application.DTOs.Jogos
+{
+    public class JogoBuscaResponse
+    {
+        public Guid Id { get; set; }
+        public string Titulo { get; set; } = string.Empty;
+        public string Descricao { get; set; } = string.Empty;
+        public decimal Preco { get; set; }
+        public double Score { get; set; }
+    }
+}
