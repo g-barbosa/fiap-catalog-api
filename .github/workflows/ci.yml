@@ -2,7 +2,7 @@
 # Push e deploy só na main, quando os secrets abaixo existirem:
 #   REGISTRY_USERNAME, REGISTRY_PASSWORD (usuário admin do ACR ou service principal)
 #   KUBE_CONFIG (kubeconfig em texto ou base64) para o rolling update
-# O passo de teste procura um projeto *Tests*.csproj. Sem ele, o build segue.
+# O passo de teste exige um projeto *Tests*.csproj. Sem ele, o job falha.
 name: CI
 
 on:
@@ -44,8 +44,8 @@ jobs:
         run: |
           mapfile -t projects < <(find src -name '*Tests*.csproj' -o -name '*Test*.csproj')
           if [ "${#projects[@]}" -eq 0 ]; then
-            echo "::notice::Nenhum projeto de teste encontrado. O build segue até existir um *Tests*.csproj."
-            exit 0
+            echo "::error::Nenhum projeto de teste encontrado. A pipeline exige um *Tests*.csproj."
+            exit 1
           fi
           dotnet test src/FiapCloudGames.Catalogs.API/FiapCloudGames.Catalogs.API.sln -c Release --no-build --verbosity normal
 
