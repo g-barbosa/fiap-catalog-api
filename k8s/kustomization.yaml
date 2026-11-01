@@ -10,4 +10,4 @@ resources:
 images:
   - name: fiap-catalog-api
     newName: fcgcontainerregistry.azurecr.io/fiap-catalog-api
-    newTag: "bd8896dcdb2e6199e1b2fe72756051e0fa859476"
+    newTag: "09dd87398880f40f6240f802170cdd99b3a66e0b"
